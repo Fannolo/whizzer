@@ -16,11 +16,10 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fannolo.whizzer"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,8 +30,6 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "react-native-app-clip"
-    ]
+    "plugins": [["react-native-app-clip", { "name": "Whizzer App Clip" }]]
   }
 }
