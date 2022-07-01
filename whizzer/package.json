@@ -8,7 +8,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest --watchAll",
-    "clip": "expo run:ios --scheme my-appClip"
+    "clip": "expo run:ios --scheme whizzerClip"
   },
   "jest": {
     "preset": "jest-expo"
