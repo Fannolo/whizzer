@@ -1,0 +1,19 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - main
+    paths-ignore:
+      - '**.js'
+      - '**.jsx'
+      - '**.ts'
+      - '**.tsx'
+      - '**.json'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Expo GitHub Action
+    uses: expo/expo-github-action@7.2.0
