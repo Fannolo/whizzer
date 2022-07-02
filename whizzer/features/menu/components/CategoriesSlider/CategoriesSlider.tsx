@@ -43,6 +43,7 @@ const CategoriesSlider = ({
       }}
       style={styles.chipsContainer}
       ref={flatListRef}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
     />
   );
 };
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     borderColor: "green",
     backgroundColor: "rgba(0, 100, 0, 0.5)",
     borderRadius: 16,
-    padding: 8
+    padding: 8,
   },
   selectedChip: {
     backgroundColor: "green",
@@ -65,6 +66,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold"
   },
+  separator: {
+    width: 4,
+  }
 });
 
 export default CategoriesSlider;

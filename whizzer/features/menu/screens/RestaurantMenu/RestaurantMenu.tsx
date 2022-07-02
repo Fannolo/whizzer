@@ -1,11 +1,16 @@
-import { View, Text, ScrollView, FlatList, StyleSheet, SectionList } from "react-native";
+import { View, Text, ScrollView, FlatList, StyleSheet, SectionList, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import useSupabaseHelpers from "../../../../hooks/useSupabaseCollection";
 import { supabase } from "../../../../utils/supabase";
 import { Dish } from "../../../../utils/types";
 import CategoriesSlider from "../../components/CategoriesSlider/CategoriesSlider";
+import { FontAwesome } from "@expo/vector-icons";
+import { RootStackScreenProps } from "../../../../types";
+import { RootScreenNames } from "../../../../navigation/constants";
 
-const RestaurantMenuScreen = (): JSX.Element => {
+type RestaurantMenuScreenProps = RootStackScreenProps<RootScreenNames.RestaurantMenuScreen>;
+
+const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({ navigation }) => {
   const { data, isLoading, error } = useSupabaseHelpers(
     supabase.from<Dish>("dishes").select().throwOnError(true),
   );
@@ -50,15 +55,26 @@ const RestaurantMenuScreen = (): JSX.Element => {
       <SectionList 
         sections={sections}
         renderSectionHeader={({section: {title}}) => (
-          <View>
+          <View  style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
           </View>
         )}
         renderItem={({item}) => (
-          <View>
-            <Text>{item.item}</Text>
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(
+                RootScreenNames.DishDetailScreen, 
+                { dish: item }
+              );
+            }}
+          >
+            <View style={styles.dishListItem}>
+              <Text>{item.item}</Text>
+              <FontAwesome name="chevron-right" />
+            </View>
+          </TouchableOpacity>
         )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
         style={styles.container}
         ref={sectionListRef}
       />
@@ -68,26 +84,28 @@ const RestaurantMenuScreen = (): JSX.Element => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
+    marginHorizontal: 8,
   },
   chipContainer: {
     paddingVertical: 8,
   },
-  chip: {
-    backgroundColor: "green",
-    borderRadius: 16,
-    padding: 8
-  },
-  chipText: {
-    color: "white",
-    fontWeight: "bold"
-  },
   sectionHeader: {
-    
+    backgroundColor: "white",
   },
   sectionHeaderText: {
     fontWeight: "bold",
+    fontSize: 18
+  },
+  dishListItem: {
+    padding: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "white"
+  },
+  separator: {
+    borderWidth: 1,
+    borderColor: "rgba(128, 128, 128, 0.5)",
   }
 });
 
