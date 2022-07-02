@@ -14,11 +14,12 @@ interface RestaurantCardProps {
 const RestaurantCard = ({ item }: RestaurantCardProps) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity
-      key={item.title}
-      onPress={() => navigation.navigate(RootScreenNames.RestaurantMenuScreen)}
-    >
-      <View style={styles.container}>
+    <View key={item.title} style={styles.container}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate(RootScreenNames.RestaurantMenuScreen)
+        }
+      >
         <View style={styles.card}>
           <Image
             style={styles.image}
@@ -30,8 +31,8 @@ const RestaurantCard = ({ item }: RestaurantCardProps) => {
             <Text>{item.distance}</Text>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 };
 

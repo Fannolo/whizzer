@@ -28,14 +28,14 @@ const HomeScreen = () => {
   ];
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={{}}>
+      <View style={{ flex: 1 }}>
         <Text>Recommended</Text>
+        <Carousel
+          data={dataTest}
+          showsHorizontalScrollIndicator={false}
+          Component={RestaurantCard}
+        />
       </View>
-      <Carousel
-        data={dataTest}
-        showsHorizontalScrollIndicator={false}
-        Component={RestaurantCard}
-      />
       <Text>HomeScreen</Text>
     </ScrollView>
   );
