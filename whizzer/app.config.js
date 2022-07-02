@@ -1,4 +1,6 @@
-{
+import 'dotenv/config';
+
+export default {
   "expo": {
     "owner": "fannolo",
     "name": "whizzer",
@@ -33,6 +35,10 @@
     },
     "plugins": [
       "react-native-app-clip"
-    ]
+    ],
+    "extra": {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    }
   }
 }
