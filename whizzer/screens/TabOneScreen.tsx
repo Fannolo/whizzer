@@ -1,15 +1,42 @@
-import { StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Image } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
+import { supabase } from '../utils/supabase';
+import { Dish } from '../utils/types';
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const [dishes, setDishes] = useState<(Dish & { imageURL: string; })[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("dishes")
+      .select()
+      .then(({ data }) => {
+        setDishes(data?.map(entry => ({
+          ...entry, 
+          imageURL: supabase
+            .storage
+            .from('food-images')
+            .getPublicUrl(`${entry.code}.jpg`)
+            .data
+            ?.publicURL
+        })) ?? []);
+      })
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+      <FlatList
+        data={dishes}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.item}</Text>
+            <Image style={styles.image} source={{ uri: item.imageURL }} />
+          </View>
+      )}
+      />
     </View>
   );
 }
@@ -20,13 +47,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+  image: {
+    width: 50,
+    height: 50,
+  }
 });
