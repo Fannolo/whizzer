@@ -7,7 +7,7 @@ import { RootTabScreenProps } from '../types';
 import { supabase } from '../utils/supabase';
 import { Dish } from '../utils/types';
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export default function TabOneScreen() {
   const { data, error, isLoading } = useSupabaseHelpers<Dish>(
     supabase.from<Dish>("dishes").select().throwOnError(true)
   );
