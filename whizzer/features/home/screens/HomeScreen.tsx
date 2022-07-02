@@ -1,42 +1,39 @@
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import React from "react";
 import RestaurantCard from "../components/RestaurantCard/RestaurantCard";
 import Carousel from "../../common/components/Carousel/Carousel";
+import useSupabaseHelpers from "../../../hooks/useSupabaseCollection";
+import { Restaurant } from "../../../utils/types";
+import { supabase } from "../../../utils/supabase";
 
 const HomeScreen = () => {
-  const dataTest = [
-    {
-      image: "../../../assets/images/sushi_restaurant_cover.jpeg",
-      title: "Sushiamelo",
-      distance: "2,6km",
-    },
-    {
-      image: "../../../assets/images/sushi_restaurant_cover.jpeg",
-      title: "Sushiamelo",
-      distance: "2,6km",
-    },
-    {
-      image: "../../../assets/images/sushi_restaurant_cover.jpeg",
-      title: "Sushiamelo",
-      distance: "2,6km",
-    },
-    {
-      image: "../../../assets/images/sushi_restaurant_cover.jpeg",
-      title: "Sushiamelo",
-      distance: "2,6km",
-    },
-  ];
+  const { data, error, isLoading } = useSupabaseHelpers(
+    supabase.from<Restaurant>("restaurants").select().throwOnError(true)
+  );
+
+  if (isLoading) {
+    return <Text>Loading...</Text>
+  }
+  
+  if (error) {
+    return <Text>ERROR</Text>
+  }
+
+  const dataTest = data?.map(restaurant => ({
+    ...restaurant,
+    image: "../../../assets/images/sushi_restaurant_cover.jpeg",
+  })) ?? [];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={{ flex: 1 }}>
-        <Text>Recommended</Text>
+        <Text style={{ fontSize: 25, fontWeight: "bold" }}>Recommended</Text>
         <Carousel
           data={dataTest}
           showsHorizontalScrollIndicator={false}
           Component={RestaurantCard}
         />
       </View>
-      <Text>HomeScreen</Text>
     </ScrollView>
   );
 };

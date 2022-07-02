@@ -10,6 +10,7 @@ import {
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootScreenNames } from "./navigation/constants";
+import { Restaurant } from "./utils/types";
 
 declare global {
   namespace ReactNavigation {
@@ -21,7 +22,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
-  [RootScreenNames.RestaurantMenuScreen]: undefined;
+  [RootScreenNames.RestaurantMenuScreen]: { restaurantId: Restaurant["id"] };
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -29,7 +30,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 
 export type RootTabParamList = {
   [RootScreenNames.HomeScreen]: undefined;
-  TabTwo: undefined;
+  [RootScreenNames.Map]: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

@@ -2,19 +2,17 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { RootScreenNames } from "../../../../navigation/constants";
+import { Restaurant } from "../../../../utils/types";
 
 interface RestaurantCardProps {
-  item: {
-    title: string;
-    image: string;
-    distance: string;
-  };
+  item: Restaurant & { image: string };
 }
 
 const RestaurantCard = ({ item }: RestaurantCardProps) => {
   const navigation = useNavigation();
+
   return (
-    <View key={item.title} style={styles.container}>
+    <View key={item.id} style={styles.container}>
       <TouchableOpacity
         onPress={() =>
           navigation.navigate(RootScreenNames.RestaurantMenuScreen)
@@ -27,8 +25,8 @@ const RestaurantCard = ({ item }: RestaurantCardProps) => {
             resizeMode={"cover"}
           />
           <View style={styles.textContainer}>
-            <Text>{item.title}</Text>
-            <Text>{item.distance}</Text>
+            <Text>{item.name}</Text>
+            <Text>69km</Text>
           </View>
         </View>
       </TouchableOpacity>
