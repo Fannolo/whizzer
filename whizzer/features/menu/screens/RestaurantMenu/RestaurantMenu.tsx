@@ -1,13 +1,36 @@
 import { View, Text, ScrollView, FlatList, StyleSheet, SectionList } from "react-native";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useSupabaseHelpers from "../../../../hooks/useSupabaseCollection";
 import { supabase } from "../../../../utils/supabase";
 import { Dish } from "../../../../utils/types";
+import CategoriesSlider from "../../components/CategoriesSlider/CategoriesSlider";
 
 const RestaurantMenuScreen = (): JSX.Element => {
   const { data, isLoading, error } = useSupabaseHelpers(
     supabase.from<Dish>("dishes").select().throwOnError(true),
   );
+
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+
+  const sectionListRef = useRef<SectionList<Dish>>(null);
+
+  const dishesByCategory = data?.reduce((acc, curr) => ({
+    ...acc,
+    [curr.kind]: [...(acc[curr.kind] ?? []), curr]
+  }), {} as Record<string, Dish[]>) ?? {};
+
+  const sections = Object.entries(dishesByCategory)
+    .map(([key, value]) => ({ title: key, data: value })); 
+
+  const sectionNames = Object.keys(dishesByCategory);
+
+  useEffect(() => {
+    if (selectedCategory !== undefined) {
+      const sectionIndex = sectionNames.findIndex((name) => name === selectedCategory);
+
+      sectionListRef.current?.scrollToLocation({ sectionIndex, itemIndex: 0 });
+    }
+  }, [selectedCategory]);
 
   if (isLoading) {
     return <Text>Loading...</Text>
@@ -17,25 +40,15 @@ const RestaurantMenuScreen = (): JSX.Element => {
     return <Text>ERROR</Text>
   }
 
-  const dishesByCategory = data?.reduce((acc, curr) => ({
-    ...acc,
-    [curr.kind]: [...(acc[curr.kind] ?? []), curr]
-  }), {} as Record<string, Dish[]>) ?? {};
-
   return (
     <View>
-      <FlatList 
-        horizontal
-        data={Object.keys(dishesByCategory)}
-        renderItem={({ item }) => (
-          <View style={styles.chip}>
-            <Text style={styles.chipText}>{item}</Text>
-          </View>
-        )}
-        style={[styles.container, styles.chipContainer]}
+      <CategoriesSlider 
+        categories={sectionNames} 
+        value={selectedCategory}
+        onChange={setSelectedCategory}
       />
       <SectionList 
-        sections={Object.entries(dishesByCategory).map(([key, value]) => ({ title: key, data: value }))}
+        sections={sections}
         renderSectionHeader={({section: {title}}) => (
           <View>
             <Text style={styles.sectionHeaderText}>{title}</Text>
@@ -47,6 +60,7 @@ const RestaurantMenuScreen = (): JSX.Element => {
           </View>
         )}
         style={styles.container}
+        ref={sectionListRef}
       />
     </View>
   );
