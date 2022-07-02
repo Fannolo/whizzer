@@ -10,6 +10,7 @@ import {
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootScreenNames } from "./navigation/constants";
+import { Dish } from "./utils/types";
 
 declare global {
   namespace ReactNavigation {
@@ -19,7 +20,7 @@ declare global {
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  Modal: undefined;
+  [RootScreenNames.DishDetailScreen]: { dish: Dish };
   NotFound: undefined;
   [RootScreenNames.RestaurantMenuScreen]: undefined;
 };

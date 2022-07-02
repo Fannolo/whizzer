@@ -16,6 +16,7 @@ import { ColorSchemeName, Pressable } from "react-native";
 
 import Colors from "../constants/Colors";
 import HomeScreen from "../features/home/screens/HomeScreen";
+import DishDetailScreen from "../features/menu/screens/DishDetailScreen/DishDetailScreen";
 import RestaurantMenuScreen from "../features/menu/screens/RestaurantMenu/RestaurantMenu";
 import useColorScheme from "../hooks/useColorScheme";
 import ModalScreen from "../screens/ModalScreen";
@@ -68,7 +69,7 @@ function RootNavigator() {
         component={RestaurantMenuScreen}
       />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name={RootScreenNames.DishDetailScreen} component={DishDetailScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
