@@ -1,30 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FlatList, StyleSheet, Image } from 'react-native';
 
 import { Text, View } from '../components/Themed';
+import useSupabaseHelpers from '../hooks/useSupabaseCollection';
 import { RootTabScreenProps } from '../types';
 import { supabase } from '../utils/supabase';
 import { Dish } from '../utils/types';
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
-  const [dishes, setDishes] = useState<(Dish & { imageURL: string; })[]>([]);
+  const { data, error, isLoading } = useSupabaseHelpers<Dish>(
+    supabase.from<Dish>("dishes").select().throwOnError(true)
+  );
 
-  useEffect(() => {
-    supabase
-      .from("dishes")
-      .select()
-      .then(({ data }) => {
-        setDishes(data?.map(entry => ({
-          ...entry, 
-          imageURL: supabase
-            .storage
-            .from('food-images')
-            .getPublicUrl(`${entry.code}.jpg`)
-            .data
-            ?.publicURL
-        })) ?? []);
-      })
-  }, []);
+  const dishes = data?.map(dish => ({
+    ...dish, 
+    imageURL: supabase
+      .storage
+      .from('food-images')
+      .getPublicUrl(`${dish.code}.jpg`)
+      .data
+      ?.publicURL
+  })) ?? [];
+
+  if (error) {
+    return <Text>ERROR</Text>
+  }
+
+  if (isLoading) {
+    return <Text>Loading...</Text>
+  }
 
   return (
     <View style={styles.container}>
