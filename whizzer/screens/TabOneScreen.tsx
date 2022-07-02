@@ -1,15 +1,46 @@
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { FlatList, StyleSheet, Image } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
+import useSupabaseHelpers from '../hooks/useSupabaseCollection';
 import { RootTabScreenProps } from '../types';
+import { supabase } from '../utils/supabase';
+import { Dish } from '../utils/types';
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const { data, error, isLoading } = useSupabaseHelpers<Dish>(
+    supabase.from<Dish>("dishes").select().throwOnError(true)
+  );
+
+  const dishes = data?.map(dish => ({
+    ...dish, 
+    imageURL: supabase
+      .storage
+      .from('food-images')
+      .getPublicUrl(`${dish.code}.jpg`)
+      .data
+      ?.publicURL
+  })) ?? [];
+
+  if (error) {
+    return <Text>ERROR</Text>
+  }
+
+  if (isLoading) {
+    return <Text>Loading...</Text>
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+      <FlatList
+        data={dishes}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.item}</Text>
+            <Image style={styles.image} source={{ uri: item.imageURL }} />
+          </View>
+      )}
+      />
     </View>
   );
 }
@@ -20,13 +51,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+  image: {
+    width: 50,
+    height: 50,
+  }
 });
