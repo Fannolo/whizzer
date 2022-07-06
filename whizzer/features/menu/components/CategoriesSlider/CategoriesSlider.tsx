@@ -1,5 +1,11 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useReducer, useRef } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import React, { useRef } from "react";
 
 type CategoriesSliderProps = {
   categories: string[];
@@ -8,41 +14,42 @@ type CategoriesSliderProps = {
   scrollOnChange?: boolean;
 };
 
-const CategoriesSlider = ({ 
-  categories, 
-  value, 
+const CategoriesSlider = ({
+  categories,
+  value,
   onChange,
-  scrollOnChange = true
+  scrollOnChange = true,
 }: CategoriesSliderProps) => {
   const flatListRef = useRef<FlatList<string>>(null);
 
   return (
-    <FlatList 
+    <FlatList
+      ref={flatListRef}
       horizontal
       data={categories}
+      showsHorizontalScrollIndicator={false}
       renderItem={({ item, index }) => {
         const isSelected = item === value;
 
         return (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => {
               if (onChange) {
                 onChange(isSelected ? undefined : item);
               }
 
               if (scrollOnChange) {
-                flatListRef.current?.scrollToIndex({ index })
+                flatListRef.current?.scrollToIndex({ index });
               }
             }}
           >
-            <View style={isSelected ? [styles.chip, styles.selectedChip] : styles.chip}>
+            <View style={[styles.chip, isSelected && styles.selectedChip]}>
               <Text style={styles.chipText}>{item}</Text>
             </View>
           </TouchableOpacity>
-        )
+        );
       }}
       style={styles.chipsContainer}
-      ref={flatListRef}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
     />
   );
@@ -54,21 +61,22 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 2,
-    borderColor: "green",
-    backgroundColor: "rgba(0, 100, 0, 0.5)",
-    borderRadius: 16,
+    borderColor: "white",
+    backgroundColor: "white",
     padding: 8,
   },
   selectedChip: {
-    backgroundColor: "green",
+    backgroundColor: "white",
+    textDecorationLine: "underline",
+    borderBottomColor: "black",
   },
   chipText: {
-    color: "white",
-    fontWeight: "bold"
+    color: "black",
+    fontWeight: "bold",
   },
   separator: {
     width: 4,
-  }
+  },
 });
 
 export default CategoriesSlider;
