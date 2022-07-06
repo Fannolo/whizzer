@@ -10,9 +10,15 @@ import { RootScreenNames } from "../../../../navigation/constants";
 
 type RestaurantMenuScreenProps = RootStackScreenProps<RootScreenNames.RestaurantMenuScreen>;
 
-const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({ navigation }) => {
+const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({ navigation, route }) => {
+  const { restaurantId } = route.params;
+
   const { data, isLoading, error } = useSupabaseHelpers(
-    supabase.from<Dish>("dishes").select().throwOnError(true),
+    supabase
+      .from<Dish>("dishes")
+      .select()
+      .filter('restaurant_id', "in", `(${restaurantId})`) // TODO: check is condition
+      .throwOnError(true),
   );
 
   const [selectedCategory, setSelectedCategory] = useState<string>();

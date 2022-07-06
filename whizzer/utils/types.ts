@@ -6,6 +6,7 @@ export type Dish = {
   ingredients: string;
   kind: string;
   quantity: number;
+  restaurant_id: Restaurant["id"];
 }
 
 type Location = {

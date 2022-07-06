@@ -20,7 +20,6 @@ import MapScreen from "../features/map/screens/MapScreen/MapScreen";
 import DishDetailScreen from "../features/menu/screens/DishDetailScreen/DishDetailScreen";
 import RestaurantMenuScreen from "../features/menu/screens/RestaurantMenu/RestaurantMenu";
 import useColorScheme from "../hooks/useColorScheme";
-import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList, RootTabParamList } from "../types";
 import { RootScreenNames } from "./constants";

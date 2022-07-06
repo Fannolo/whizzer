@@ -40,6 +40,7 @@ const MapScreen = ({
       <MapView style={styles.map}>
         {locations?.map(({restaurantId, ...loc}) => (
           <Marker 
+            key={`${restaurantId}-${JSON.stringify(loc)}`}
             coordinate={loc}
             onPress={handleSelectRestaurant(restaurantId)}
           />
