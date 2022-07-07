@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ScrollViewProps } from "react-native";
+import { View, ScrollViewProps, FlatList } from "react-native";
 import React from "react";
 
 interface CarouselProps<T> extends ScrollViewProps {
@@ -9,11 +9,17 @@ interface CarouselProps<T> extends ScrollViewProps {
 const Carousel = <T,>({ data, Component, ...rest }: CarouselProps<T>) => {
   return (
     <View>
-      <ScrollView horizontal {...rest}>
-        {data.map((item) => {
-          return <Component item={item} />;
-        })}
-      </ScrollView>
+      <FlatList
+        horizontal
+        {...rest}
+        data={data}
+        renderItem={({ item }) => {
+          if ("id" in item) {
+            return <Component item={item} />;
+          }
+          return null;
+        }}
+      ></FlatList>
     </View>
   );
 };
