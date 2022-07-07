@@ -11,13 +11,12 @@ interface RestaurantCardProps {
 const RestaurantCard = ({ item }: RestaurantCardProps) => {
   const navigation = useNavigation();
 
+  const handleNavigation = () =>
+    navigation.navigate(RootScreenNames.RestaurantMenuScreen);
+
   return (
     <View key={item.id} style={styles.container}>
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate(RootScreenNames.RestaurantMenuScreen)
-        }
-      >
+      <TouchableOpacity onPress={handleNavigation}>
         <View style={styles.card}>
           <Image
             style={styles.image}
