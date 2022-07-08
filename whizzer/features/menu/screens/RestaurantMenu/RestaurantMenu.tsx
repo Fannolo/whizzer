@@ -1,164 +1,165 @@
+import React, { useCallback, useMemo, useRef } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   SectionList,
-  TouchableOpacity,
-  Image,
-} from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import useSupabaseHelpers from "../../../../hooks/useSupabaseCollection";
-import { supabase } from "../../../../utils/supabase";
-import { Dish } from "../../../../utils/types";
-import CategoriesSlider from "../../components/CategoriesSlider/CategoriesSlider";
-import { RootStackScreenProps } from "../../../../types";
-import { RootScreenNames } from "../../../../navigation/constants";
+  SectionListRenderItem,
+  DefaultSectionT,
+  SectionListData,
+} from 'react-native'
 
-const ITEM_HEIGHT = 150;
+import useSupabaseHelpers from '../../../../hooks/useSupabaseCollection'
+import { RootScreenNames } from '../../../../navigation/constants'
+import { RootStackScreenProps } from '../../../../types'
+import { supabase } from '../../../../utils/supabase'
+import { Dish } from '../../../../utils/types'
+import CategoriesSlider from '../../components/CategoriesSlider/CategoriesSlider'
+import RestaurantMenuItem from './RestaurantMenuItem'
+
+const ITEM_HEIGHT = 150
 
 type RestaurantMenuScreenProps =
-  RootStackScreenProps<RootScreenNames.RestaurantMenuScreen>;
+  RootStackScreenProps<RootScreenNames.RestaurantMenuScreen>
 
 const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({
-  navigation,
   route,
 }) => {
-  const { restaurantId } = route.params;
+  const { restaurantId } = route.params
 
   const { data, isLoading, error } = useSupabaseHelpers(
     supabase
-      .from<Dish>("dishes")
+      .from<Dish>('dishes')
       .select()
-      .filter("restaurant_id", "in", `(${restaurantId})`) // TODO: check is condition
-      .throwOnError(true)
-  );
+      .filter('restaurant_id', 'in', `(${restaurantId})`) // TODO: check is condition
+      .throwOnError(true),
+  )
 
-  const dishes =
-    data?.map((dish) => ({
-      ...dish,
-      imageURL: supabase.storage
-        .from("food-images")
-        .getPublicUrl(`${restaurantId}/${dish.code}.jpg`).data?.publicURL,
-    })) ?? [];
+  const dishes = useMemo(
+    () =>
+      data?.map((dish) => ({
+        ...dish,
+        imageURL: supabase.storage
+          .from('food-images')
+          .getPublicUrl(`${restaurantId}/${dish.code}.jpg`).data?.publicURL,
+      })) ?? [],
+    [data, restaurantId],
+  )
 
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const sectionListRef = useRef<SectionList<Dish>>(null)
 
-  const sectionListRef = useRef<SectionList<Dish>>(null);
+  const dishesByCategory = useMemo(
+    () =>
+      dishes?.reduce(
+        (acc, curr) => ({
+          ...acc,
+          [curr.kind]: [...(acc[curr.kind] ?? []), curr],
+        }),
+        {} as Record<string, Dish[]>,
+      ) ?? {},
+    [dishes],
+  )
 
-  const dishesByCategory =
-    dishes?.reduce(
-      (acc, curr) => ({
-        ...acc,
-        [curr.kind]: [...(acc[curr.kind] ?? []), curr],
-      }),
-      {} as Record<string, Dish[]>
-    ) ?? {};
+  const sections = useMemo(
+    () =>
+      Object.entries(dishesByCategory).map(([key, value]) => ({
+        title: key,
+        data: value,
+      })),
+    [dishesByCategory],
+  )
 
-  const sections = Object.entries(dishesByCategory).map(([key, value]) => ({
-    title: key,
-    data: value,
-  }));
+  const sectionNames = useMemo(
+    () => Object.keys(dishesByCategory),
+    [dishesByCategory],
+  )
 
-  const sectionNames = Object.keys(dishesByCategory);
-
-  useEffect(() => {
-    if (selectedCategory !== undefined) {
+  const handleChangeCategory = useCallback(
+    (selectedCategory?: string) => {
       const sectionIndex = sectionNames.findIndex(
-        (name) => name === selectedCategory
-      );
+        (name) => name === selectedCategory,
+      )
 
-      sectionListRef.current?.scrollToLocation({ sectionIndex, itemIndex: 0 });
-    }
-  }, [selectedCategory]);
+      sectionListRef.current?.scrollToLocation({
+        viewPosition: 0,
+        sectionIndex,
+        itemIndex: 0,
+      })
+    },
+    [sectionNames],
+  )
+
+  const getItemLayout = useCallback(
+    (_data: unknown, index: number) => ({
+      length: ITEM_HEIGHT,
+      offset: ITEM_HEIGHT * index,
+      index,
+    }),
+    [],
+  )
+
+  const keyExtractor = useCallback((item: Dish) => item.id, [])
+
+  const renderItem = useCallback<SectionListRenderItem<Dish, DefaultSectionT>>(
+    ({ item }) => (
+      <RestaurantMenuItem item={item} style={{ maxHeight: ITEM_HEIGHT }} />
+    ),
+    [],
+  )
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: SectionListData<Dish, DefaultSectionT> }) =>
+      // TODO
+      // <View style={styles.sectionHeader}>
+      // 	<Text style={styles.sectionHeaderText}>{title}</Text>
+      // </View>
+      null,
+    [],
+  )
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <Text>Loading...</Text>
   }
 
   if (error) {
-    return <Text>ERROR</Text>;
+    return <Text>ERROR</Text>
   }
 
   return (
     <View style={styles.container}>
       <CategoriesSlider
         categories={sectionNames}
-        value={selectedCategory}
-        onChange={setSelectedCategory}
+        onChange={handleChangeCategory}
       />
       <SectionList
-        sections={sections}
-        initialScrollIndex={0}
-        getItemLayout={(data, index) => ({
-          length: ITEM_HEIGHT,
-          offset: ITEM_HEIGHT * index,
-          index,
-        })}
-        keyExtractor={({ id }) => id}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>{title}</Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{ height: ITEM_HEIGHT }}
-            onPress={() => {
-              navigation.navigate(RootScreenNames.DishDetailScreen, {
-                dish: item,
-              });
-            }}
-          >
-            <View style={styles.dishListItem}>
-              <View style={styles.textContainer}>
-                <Text style={styles.bold}>{item.item}</Text>
-                <Text style={styles.priceText}>{`${item.price}$`}</Text>
-                <Text style={{ color: "grey" }}>{`${item.ingredients}`}</Text>
-              </View>
-              <Image style={styles.foodImage} source={{ uri: item.imageURL }} />
-            </View>
-          </TouchableOpacity>
-        )}
-        style={styles.container}
+        // ! FIXME
+        // getItemLayout={getItemLayout}
+        keyExtractor={keyExtractor}
         ref={sectionListRef}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        sections={sections}
+        style={styles.container}
+        onScrollToIndexFailed={(info) => {
+          console.warn('onScrollToIndexFailed:', info)
+        }}
       />
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
-  bold: { fontWeight: "bold" },
   container: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     paddingHorizontal: 8,
   },
-  chipContainer: {
-    paddingVertical: 8,
-  },
   sectionHeader: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   sectionHeaderText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 18,
   },
-  dishListItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "white",
-  },
-  foodImage: {
-    width: 100,
-    height: 100,
-  },
-  priceText: {
-    fontWeight: "400",
-  },
-  textContainer: {
-    flexDirection: "column",
-    flex: 1,
-  },
-});
+})
 
-export default RestaurantMenuScreen;
+export default RestaurantMenuScreen
