@@ -25,7 +25,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>myapp</string>
+          <string>whizzer</string>
           <string>com.whizzer.whizzer</string>
         </array>
       </dict>
