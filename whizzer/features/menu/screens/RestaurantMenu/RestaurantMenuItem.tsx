@@ -14,8 +14,8 @@ import { RootScreenNames } from '../../../../navigation/constants'
 import { Dish } from '../../../../utils/types'
 
 interface RestaurantMenuItemProps {
-  item: Dish
-  style?: StyleProp<ViewStyle>
+  item: Dish & { imageURL?: string };
+  style?: StyleProp<ViewStyle>;
 }
 
 const RestaurantMenuItem = ({ item, style }: RestaurantMenuItemProps) => {

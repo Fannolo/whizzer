@@ -100,7 +100,7 @@ const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({
 
   const keyExtractor = useCallback((item: Dish) => item.id, [])
 
-  const renderItem = useCallback<SectionListRenderItem<Dish, DefaultSectionT>>(
+  const renderItem = useCallback<SectionListRenderItem<Dish & { imageURL?: string }, DefaultSectionT>>(
     ({ item }) => (
       <RestaurantMenuItem item={item} style={{ maxHeight: ITEM_HEIGHT }} />
     ),
