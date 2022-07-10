@@ -12,7 +12,9 @@ const RestaurantCard = ({ item }: RestaurantCardProps) => {
   const navigation = useNavigation();
 
   const handleNavigation = () =>
-    navigation.navigate(RootScreenNames.RestaurantMenuScreen);
+    navigation.navigate(RootScreenNames.RestaurantMenuScreen, {
+      restaurantId: item.id,
+    });
 
   return (
     <View key={item.id} style={styles.container}>
