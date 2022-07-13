@@ -4,31 +4,34 @@
  * https://reactnavigation.org/docs/configuring-links
  */
 
-import { LinkingOptions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
+import { LinkingOptions } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from "../types";
+import { RootScreenNames } from "./constants";
 
 const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: [Linking.makeUrl('/')],
+  prefixes: [Linking.createURL("/"), "whizzer://"],
   config: {
     screens: {
       Root: {
         screens: {
-          TabOne: {
+          [RootScreenNames.HomeScreen]: {
             screens: {
-              TabOneScreen: 'one',
+              Home: "home",
             },
           },
-          TabTwo: {
+
+          [RootScreenNames.Map]: {
             screens: {
-              TabTwoScreen: 'two',
+              Map: "map",
             },
           },
         },
       },
-      Modal: 'modal',
-      NotFound: '*',
+      [RootScreenNames.RestaurantMenuScreen]: { path: "menu/:id" },
+      Modal: "modal",
+      NotFound: "*",
     },
   },
 };
