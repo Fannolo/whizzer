@@ -31,7 +31,7 @@ const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({
     supabase
       .from<Dish>('dishes')
       .select()
-      .filter('restaurant_id', 'in', `(${restaurantId})`) // TODO: check is condition
+      .match({ 'restaurant_id': restaurantId })
       .throwOnError(true),
   )
 
@@ -102,18 +102,16 @@ const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({
 
   const renderItem = useCallback<SectionListRenderItem<Dish & { imageURL?: string }, DefaultSectionT>>(
     ({ item }) => (
-      <RestaurantMenuItem item={item} style={{ maxHeight: ITEM_HEIGHT }} />
+      <RestaurantMenuItem item={item} style={{ height: ITEM_HEIGHT }} />
     ),
     [],
   )
 
   const renderSectionHeader = useCallback(
     ({ section }: { section: SectionListData<Dish, DefaultSectionT> }) =>
-      // TODO
-      // <View style={styles.sectionHeader}>
-      // 	<Text style={styles.sectionHeaderText}>{title}</Text>
-      // </View>
-      null,
+      <View style={styles.sectionHeader}>
+      	<Text style={styles.sectionHeaderText}>{section.title}</Text>
+      </View>,
     [],
   )
 
@@ -132,17 +130,16 @@ const RestaurantMenuScreen: React.FC<RestaurantMenuScreenProps> = ({
         onChange={handleChangeCategory}
       />
       <SectionList
-        // ! FIXME
-        // getItemLayout={getItemLayout}
+      
+        getItemLayout={(_, index) => (
+          {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+        )}
         keyExtractor={keyExtractor}
         ref={sectionListRef}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         sections={sections}
         style={styles.container}
-        onScrollToIndexFailed={(info) => {
-          console.warn('onScrollToIndexFailed:', info)
-        }}
       />
     </View>
   )
